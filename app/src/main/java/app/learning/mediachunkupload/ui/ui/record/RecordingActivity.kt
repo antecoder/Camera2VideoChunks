@@ -1,9 +1,8 @@
-package app.learning.mediachunkupload
+package app.learning.mediachunkupload.ui.ui.record
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Matrix
 import android.graphics.RectF
@@ -30,7 +29,6 @@ import android.view.TextureView
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -42,7 +40,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,14 +48,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -68,13 +63,17 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import app.learning.mediachunkupload.RecordingActivity.Companion.LOG_TAG
+import app.learning.mediachunkupload.ui.ui.record.RecordingActivity.Companion.LOG_TAG
 import app.learning.mediachunkupload.ui.custom.AutoFitTextureView
 import app.learning.mediachunkupload.ui.theme.MediaChunkUploadTheme
-import app.learning.mediachunkupload.ui.util.CameraHelper
+import app.learning.mediachunkupload.util.FileUtils
+import app.learning.mediachunkupload.util.Constants
 import java.io.File
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.Collections
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
@@ -496,7 +495,7 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
     private fun getNextChunkPath(path: String): String {
         chunkIndex++
-        val chunkPath = "${path}_${chunkIndex}.mp4"
+        val chunkPath = "${path}/PART_${chunkIndex}.mp4"
         nextVideoAbsolutePath = chunkPath
         Log.d(LOG_TAG, "Chunk $chunkIndex video file path: $chunkPath")
         return chunkPath
@@ -506,7 +505,10 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        outputFile = CameraHelper.getOutputMediaFile(this, CameraHelper.MEDIA_TYPE_VIDEO)
+
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        outputFile = FileUtils.getOutputMediaFile(this, timeStamp)
+
         mediaRecorder.setVideoEncodingBitRate(800000)
         mediaRecorder.setOutputFile(getNextChunkPath(outputFile!!.path))
         mediaRecorder.setVideoFrameRate(Constants.VIDEO_FRAME_RATE)

@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.androidx.legacy.support.v13)
     implementation(libs.cardview)
     implementation(libs.androidx.appcompat.v131)
+    implementation(libs.androidx.runtime.livedata)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -14,4 +14,11 @@
         ]]>
     </string>
     <string name="title_activity_recording">RecordingActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="video">Video</string>
+    <string name="parts">Parts</string>
+    <string name="part">Part</string>
+    <string name="no_recordings_found">No recordings found.</string>
+    <string name="chunks">Chunks</string>
+    <string name="chunk">Chunk</string>
 </resources>

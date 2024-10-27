@@ -41,10 +41,13 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import app.learning.mediachunkupload.ui.custom.AutoFitTextureView
-import app.learning.mediachunkupload.ui.util.CameraHelper
+import app.learning.mediachunkupload.util.FileUtils
 import java.io.File
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.Collections
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
@@ -475,7 +478,10 @@ class Camera1VideoFragment : Fragment(),
         //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        mOutputFile = CameraHelper.getOutputMediaFile(requireContext(), CameraHelper.MEDIA_TYPE_VIDEO)
+
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+//        outputFile = FileUtils.getOutputMediaFile(this, timeStamp)
+
         mMediaRecorder.setVideoEncodingBitRate(800000)
         mMediaRecorder.setOutputFile(nextChunkPath)
         mMediaRecorder.setVideoFrameRate(30)

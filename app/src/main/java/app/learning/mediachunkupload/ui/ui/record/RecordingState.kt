@@ -1,4 +1,4 @@
-package app.learning.mediachunkupload
+package app.learning.mediachunkupload.ui.ui.record
 
 /**
  * Enum class representing the recording state of the camnera.
