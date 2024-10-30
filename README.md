@@ -5,7 +5,8 @@ This is a simple sample of recording camera video in bits/chunks of a custom siz
 - Clone the repository to your preferred directory:
   > git clone https://github.com/antecoder/Camera2VideoChunks.git
 - Open the project using Android Studio and let gradle sync & download dependencies.
-- Run on your camera-enabled device or on the emulator
+- Run on your camera-enabled device or on the emulator.
+- You can also just download and install the .apk file [here](https://drive.google.com/file/d/1lM37cVqFgGiLJayvWTNubD5lCGAxrJqR/view?usp=sharing) :).
 
 #### Misc
 - You can set the size of the chunk output in the **Constants**.kt file (*app.learning.mediachunkupload.util.Constants*)
