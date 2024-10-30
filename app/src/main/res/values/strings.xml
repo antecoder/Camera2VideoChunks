@@ -21,4 +21,10 @@
     <string name="no_recordings_found">No recordings found.</string>
     <string name="chunks">Chunks</string>
     <string name="chunk">Chunk</string>
+    <string name="permission_rationale">Permissions needed.</string>
+    <string name="grant">Grant</string>
+    <string name="ok">Ok</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="settings">Settings</string>
+    <string name="permissions">Permissions</string>
 </resources>

@@ -4,9 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 object FileUtils {
 
@@ -31,13 +28,6 @@ object FileUtils {
             }
         }
         return dir
-    }
-
-    /**
-     * Create a file Uri for saving a video
-     */
-    fun getOutputMediaFileUri(context: Context, sessionName: String): Uri {
-        return Uri.fromFile(getOutputMediaFile(context, sessionName))
     }
 
 }

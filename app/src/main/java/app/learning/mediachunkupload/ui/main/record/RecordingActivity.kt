@@ -1,4 +1,4 @@
-package app.learning.mediachunkupload.ui.ui.record
+package app.learning.mediachunkupload.ui.main.record
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -63,7 +63,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import app.learning.mediachunkupload.ui.ui.record.RecordingActivity.Companion.LOG_TAG
+import app.learning.mediachunkupload.ui.main.record.RecordingActivity.Companion.LOG_TAG
 import app.learning.mediachunkupload.ui.custom.AutoFitTextureView
 import app.learning.mediachunkupload.ui.theme.MediaChunkUploadTheme
 import app.learning.mediachunkupload.util.FileUtils
@@ -79,21 +79,20 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.max
 
 
+/**
+ * Activity housing the access of the camera & recording videos.
+ */
 class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListener,
     MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener {
 
     companion object {
-        const val LOG_TAG = "RecordingActivity Logger"
+
+        const val LOG_TAG = "RecordingActivity"
 
         private const val SENSOR_ORIENTATION_DEFAULT_DEGREES = 90
         private const val SENSOR_ORIENTATION_INVERSE_DEGREES = 270
         private val DEFAULT_ORIENTATIONS = SparseIntArray()
         private val INVERSE_ORIENTATIONS = SparseIntArray()
-
-        private val PERMISSIONS = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO,
-        )
 
         init {
             DEFAULT_ORIENTATIONS.append(Surface.ROTATION_0, 90)
@@ -180,8 +179,7 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
         override fun onOpened(cameraDevice: CameraDevice) {
             this@RecordingActivity.cameraDevice = cameraDevice
-            Log.d(LOG_TAG, "Camera opened")
-            // camera device gotten, start preview presentiation to user.
+            // camera device gotten, start preview presentation to user.
             startPreview()
             cameraOpenCloseLock.release()
             textureView?.let {
@@ -217,7 +215,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
                     .fillMaxSize()
                 ) {
                     CameraFeedView(textureViewConsumer = {
-                        Log.d(LOG_TAG, "Gotten texture view.")
                         this@RecordingActivity.textureView = it
                         onResume()
                     })
@@ -248,14 +245,11 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
     override fun onResume() {
         super.onResume()
-        Log.d(LOG_TAG, "On Resume")
         startBackgroundExecutor()
         textureView?.let {
             if (it.isAvailable) {
-                Log.d(LOG_TAG, "Texture view available")
                 openCamera(it.width, it.height)
             } else {
-                Log.d(LOG_TAG, "Texture view not available")
                 it.surfaceTextureListener = this
             }
         }
@@ -265,7 +259,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
         closeCamera()
         releaseBackgroundExecutor()
         super.onPause()
-        Log.d(LOG_TAG, "On Pause called")
     }
 
 
@@ -296,7 +289,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
     @SuppressLint("MissingPermission")
     private fun openCamera(width: Int, height: Int) {
-        Log.d(LOG_TAG, "Opening camera")
         if (isFinishing) return
 
         val cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -342,15 +334,12 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
                 MediaRecorder()
             }
             cameraManager.openCamera(cameraId, cameraStateCallback, backgroundHandler)
-//            cameraManager.openCamera(cameraId, backgroundExecutor!!, cameraStateCallback)
         } catch (exception: CameraAccessException) {
-            Log.e(LOG_TAG, "Camera access exception: " + exception.message)
             exception.printStackTrace()
             finish()
         } catch (exception: NullPointerException) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            Log.e(LOG_TAG, "Camera2API not supported exception: " + exception.message)
             exception.printStackTrace()
             finish()
         } catch (exception: InterruptedException)  {
@@ -366,7 +355,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
             cameraDevice?.close()
             cameraDevice = null
         } catch (exception: InterruptedException) {
-            Log.d(LOG_TAG, "Interrupted while trying to lock camera closing.")
             exception.printStackTrace()
             throw RuntimeException("Interrupted while trying to lock camera closing.")
         } finally {
@@ -375,9 +363,7 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
     }
 
     private fun startPreview() {
-        Log.d(LOG_TAG, "Starting preview")
         if (cameraDevice == null || textureView == null || !textureView!!.isAvailable || previewSize == null) {
-            Log.d(LOG_TAG, "Camera not ready")
             return
         }
         try {
@@ -390,15 +376,11 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
             val sessionCallback: CameraCaptureSession.StateCallback = object: CameraCaptureSession.StateCallback() {
                 override fun onConfigured(session: CameraCaptureSession) {
-                    Log.d(LOG_TAG, "Configured camera")
                     captureSession = session
                     updatePreview()
                 }
 
-                override fun onConfigureFailed(session: CameraCaptureSession) {
-                    Log.d(LOG_TAG, "Failed to configure camera")
-                    Log.d(LOG_TAG, "Error failing to configure")
-                }
+                override fun onConfigureFailed(session: CameraCaptureSession) {}
             }
 
 //            val config = SessionConfiguration(SESSION_REGULAR,
@@ -409,19 +391,16 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
         } catch (exception: CameraAccessException) {
             exception.printStackTrace()
-            Log.d(LOG_TAG, "Camera access exception")
         }
     }
 
     private fun updatePreview() {
-        Log.d(LOG_TAG, "Updating preview")
         cameraDevice?.let {
             try {
                 previewBuilder!!.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
                 captureSession?.setRepeatingRequest(previewBuilder!!.build(), null, backgroundHandler)
             } catch (exception: CameraAccessException) {
                 exception.printStackTrace()
-                Log.d(LOG_TAG, "Camera access exception")
             }
         }
     }
@@ -497,7 +476,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
         chunkIndex++
         val chunkPath = "${path}/PART_${chunkIndex}.mp4"
         nextVideoAbsolutePath = chunkPath
-        Log.d(LOG_TAG, "Chunk $chunkIndex video file path: $chunkPath")
         return chunkPath
     }
 
@@ -512,9 +490,10 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
         mediaRecorder.setVideoEncodingBitRate(800000)
         mediaRecorder.setOutputFile(getNextChunkPath(outputFile!!.path))
         mediaRecorder.setVideoFrameRate(Constants.VIDEO_FRAME_RATE)
-        mediaRecorder.setVideoSize(640, 480)
+//        mediaRecorder.setVideoSize(640, 480)
+        mediaRecorder.setVideoSize(videoSize!!.width, videoSize!!.height)
 
-        // set size according to orientation
+//        // set size according to orientation
 //        val orientation = resources.configuration.orientation
 //        videoSize?.let {
 //            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -549,7 +528,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
     private fun startRecording() {
         if (cameraDevice == null || !textureView!!.isAvailable || previewSize == null) {
-            Log.d(LOG_TAG, "Camera not ready")
             return
         }
         try {
@@ -594,7 +572,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
                 }
 
                 override fun onConfigureFailed(session: CameraCaptureSession) {
-                    Log.d(LOG_TAG, "Failed to configure camera")
                     finish()
                 }
             }
@@ -622,7 +599,6 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
 
         nextVideoAbsolutePath = null
         chunkIndex = 0
-        Log.d(LOG_TAG, "Recording Stopped")
         startPreview()
     }
 
@@ -647,19 +623,14 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
     }
 
     override fun onInfo(mediaRecorder: MediaRecorder?, what: Int, extra: Int) {
-        Log.d(LOG_TAG, "mediaRecorder onInfo, what:$what  extra:$extra  recorderIndex: 1")
-        when (what) {
+       when (what) {
             MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED -> return
             MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_APPROACHING -> {
-                Log.d(LOG_TAG, "MEDIA_RECORDER_INFO_MAX_FILE_SIZE_APPROACHING")
                 val nextFile = File(getNextChunkPath(outputFile!!.path))
-                Log.d(LOG_TAG, "Next file: $nextFile")
                 try {
                     mediaRecorder!!.setNextOutputFile(nextFile)
-                    Log.d(LOG_TAG, "Set next file: $nextFile")
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    Log.d(LOG_TAG, "Error setting next recorder")
                 }
                 return
             }
@@ -704,12 +675,10 @@ internal class CompareSizesByArea : Comparator<Size> {
  */
 private fun chooseVideoSize(choices: Array<Size>): Size {
     for (size in choices) {
-        Log.d(LOG_TAG, "Choosing video size for option: $size")
         if (size.width == size.height * 4 / 3 && size.width <= 1080) {
             return size
         }
     }
-    Log.e(LOG_TAG, "Couldn't find any suitable video size")
     return choices[choices.size - 1]
 }
 
@@ -730,7 +699,6 @@ private fun chooseOptimalSize(choices: Array<Size>, width: Int, height: Int, asp
     val w = aspectRatio!!.width
     val h = aspectRatio.height
     choices.forEach { option ->
-        Log.d(LOG_TAG, "Choosing optimal size for option: $option")
         if (option.height == option.width * h / w && option.width >= width && option.height >= height)
             bigEnough.add(option)
     }
@@ -739,7 +707,6 @@ private fun chooseOptimalSize(choices: Array<Size>, width: Int, height: Int, asp
     if (bigEnough.size > 0) {
         return Collections.min(bigEnough, CompareSizesByArea())
     } else {
-        Log.e(LOG_TAG, "Couldn't find any suitable preview size")
         return choices[0]
     }
 }
@@ -810,20 +777,7 @@ fun CameraHudView(
                 )
             }
         },
-        title = {
-            Box(
-                modifier = Modifier.wrapContentSize()
-                    .background(color = Color.Black.copy(alpha = 0.3f), shape = RoundedCornerShape(16.dp))
-            ) {
-                Text(
-                    "00:00",
-                    color = White,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.align(Alignment.Center)
-                        .padding(8.dp, 4.dp, 8.dp, 4.dp)
-                )
-            }
-        },
+        title = {},
         modifier = modifier.padding(start = 8.dp, end = 8.dp)
     )
 }

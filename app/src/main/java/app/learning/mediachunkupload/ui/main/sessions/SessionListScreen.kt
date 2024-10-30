@@ -1,12 +1,5 @@
-package app.learning.mediachunkupload.ui
+package app.learning.mediachunkupload.ui.main.sessions
 
-import android.content.Intent
-import android.graphics.Paint.Align
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,51 +37,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.learning.mediachunkupload.R
+import app.learning.mediachunkupload.ui.main.record.Session
 import app.learning.mediachunkupload.ui.theme.MediaChunkUploadTheme
-import app.learning.mediachunkupload.ui.ui.record.Recording
-import app.learning.mediachunkupload.ui.ui.record.RecordingActivity
+import kotlin.coroutines.EmptyCoroutineContext
 
-class MainActivity : ComponentActivity() {
 
-    val viewModel: MainActivityViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MediaChunkUploadTheme {
-                Scaffold(
-                    topBar = {
-                        MainAppBar()
-                    },
-                    floatingActionButton = {
-                        StartRecordingButton(onClickListener = {
-                            startRecordingActivity()
-                        })
-                    },
-                    modifier = Modifier.fillMaxSize())
-                { innerPadding ->
-                    val recordings = viewModel.recordings.observeAsState().value
-                    MainAppContent(recordings, modifier = Modifier.padding(innerPadding))
-                }
+/**
+ * Composable displaying a list of recorded [Session] items.
+ */
+@Composable
+fun SessionListScreen(viewModel: SessionsViewModel?, onSelectSession: (Session) -> Unit, onRecordButtonClick: () -> Unit, modifier: Modifier = Modifier) {
+    val sessions = viewModel?.recordings?.collectAsState(EmptyCoroutineContext)?.value
+    MediaChunkUploadTheme {
+        Scaffold (
+            topBar = {
+                SessionListAppBar()
+            },
+            floatingActionButton = {
+                StartRecordingButton(onClickListener = onRecordButtonClick)
             }
+        ) {
+            SessionListContent(sessions, onSelectSession, modifier.padding(it))
         }
     }
-
-    private fun startRecordingActivity() {
-        startActivity(Intent(this, RecordingActivity::class.java))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.refreshFileList(this)
-    }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainAppBar(modifier: Modifier = Modifier) {
+fun SessionListAppBar(modifier: Modifier = Modifier) {
     TopAppBar(
         title = {
             Text(
@@ -99,23 +75,14 @@ fun MainAppBar(modifier: Modifier = Modifier) {
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary
-            ),
+        ),
         modifier = modifier
     )
 }
 
-@Preview(showBackground = true)
 @Composable
-fun MainAppBarPreview() {
-    MediaChunkUploadTheme {
-        MainAppBar()
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainAppContent(recordings: List<Recording>?, modifier: Modifier = Modifier) {
-    if (recordings.isNullOrEmpty()) {
+fun SessionListContent(sessions: List<Session>?, onSelectSession: (Session) -> Unit, modifier: Modifier = Modifier) {
+    if (sessions.isNullOrEmpty()) {
         Box (
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -132,8 +99,8 @@ fun MainAppContent(recordings: List<Recording>?, modifier: Modifier = Modifier) 
         LazyColumn (
             modifier = modifier.fillMaxSize()
         ) {
-            items(items = recordings) { recording ->
-                RecordingItemView(recording) {}
+            items(items = sessions) { session ->
+                SessionItemView(session, onSelectSession)
                 Spacer(
                     modifier = Modifier.background(Color.DarkGray)
                         .height(2.dp)
@@ -143,23 +110,6 @@ fun MainAppContent(recordings: List<Recording>?, modifier: Modifier = Modifier) 
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MainAppContentEmptyPreview(modifier: Modifier = Modifier) {
-    MediaChunkUploadTheme {
-        MainAppContent(listOf(),  modifier)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainAppContentPreview(modifier: Modifier = Modifier) {
-    MediaChunkUploadTheme {
-        val sampleRecording = Recording("Sample Recording", "path/to/folder", listOf())
-        val items = listOf(sampleRecording, sampleRecording, sampleRecording)
-        MainAppContent(items,  modifier)
-    }
-}
 
 @Composable
 fun StartRecordingButton(onClickListener: () -> Unit, modifier: Modifier = Modifier) {
@@ -177,18 +127,10 @@ fun StartRecordingButton(onClickListener: () -> Unit, modifier: Modifier = Modif
 }
 
 @Composable
-@Preview
-fun StartRecordingButtonPreview() {
-    MediaChunkUploadTheme {
-        StartRecordingButton({})
-    }
-}
-
-@Composable
-fun RecordingItemView(recording: Recording, onRecordingClickListener: (Recording) -> Unit) {
+fun SessionItemView(session: Session, onSessionClickListener: (Session) -> Unit) {
     Card (
         onClick = {
-            onRecordingClickListener(recording)
+            onSessionClickListener(session)
         },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier.fillMaxWidth()
@@ -203,19 +145,23 @@ fun RecordingItemView(recording: Recording, onRecordingClickListener: (Recording
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = recording.name,
+                    text = session.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${recording.recordCount} ${if (recording.recordCount == 1) stringResource(R.string.chunk) else stringResource(R.string.chunks)}",
+                    text = "${session.recordCount} ${if (session.recordCount == 1) stringResource(
+                        R.string.chunk) else stringResource(R.string.chunks)
+                    }",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
             IconButton(
-                onClick = {}
+                onClick = {
+                    onSessionClickListener(session)
+                }
             ) {
                 Icon(
                     imageVector = Icons.Filled.PlayArrow,
@@ -226,13 +172,12 @@ fun RecordingItemView(recording: Recording, onRecordingClickListener: (Recording
     }
 }
 
-@Preview(showBackground = true)
+
+// PREVIEWS
 @Composable
-fun RecordingItemViewPreview(modifier: Modifier = Modifier) {
-    val sampleRecording = Recording("Sample Recording", "path/to/folder", listOf())
+@Preview(showBackground = true)
+fun SessionListScreenPreview() {
     MediaChunkUploadTheme {
-        RecordingItemView(sampleRecording) {}
+        SessionListScreen(null, {}, {})
     }
 }
-
-

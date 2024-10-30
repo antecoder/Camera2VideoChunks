@@ -63,10 +63,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended.android)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Media3
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.dash)
 
     implementation(libs.guava)
     implementation(libs.androidx.concurrent.futures)
@@ -76,11 +79,20 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.material3.v140alpha02)
+
+
+    implementation(libs.androidx.navigation.navigation.compose)
+    implementation(libs.androidx.navigation.fragment.compose)
+
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.legacy.support.v13)
     implementation(libs.cardview)
     implementation(libs.androidx.appcompat.v131)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.navigation.runtime.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

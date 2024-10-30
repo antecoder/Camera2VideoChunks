@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.23.1"
 agp = "8.6.1"
 appcompatVersion = "1.3.1"
 cardviewVersion = "1.0.0"
@@ -15,6 +16,8 @@ legacySupportV4 = "1.0.0"
 lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.3"
 composeBom = "2024.04.01"
+material3 = "1.3.0"
+material3Version = "1.4.0-alpha02"
 materialIconsExtended = "1.7.4"
 media3Ui = "1.4.1"
 cameraLifecycle = "1.3.4"
@@ -24,15 +27,24 @@ material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.1.4"
 runtimeLivedata = "1.7.4"
+navigationRuntimeKtx = "2.8.3"
+navigationFragmentCompose = "2.8.3"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+androidx-material3-v140alpha02 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
+androidx-navigation-fragment-compose = { module = "androidx.navigation:navigation-fragment-compose", version.ref = "navigationFragmentCompose" }
+androidx-navigation-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationFragmentCompose" }
 androidx-appcompat-v131 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "concurrentFutures" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-legacy-support-v13 = { module = "androidx.legacy:legacy-support-v13", version.ref = "legacySupportV13" }
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacySupportV4" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-material-icons-extended-android = { module = "androidx.compose.material:material-icons-extended-android", version.ref = "materialIconsExtended" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Ui" }
+androidx-media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3Ui" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Ui" }
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardviewVersion" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -57,6 +69,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
