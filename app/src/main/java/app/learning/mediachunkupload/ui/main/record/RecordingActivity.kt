@@ -1,6 +1,5 @@
 package app.learning.mediachunkupload.ui.main.record
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
@@ -35,9 +34,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
@@ -46,10 +43,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,7 +58,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import app.learning.mediachunkupload.ui.main.record.RecordingActivity.Companion.LOG_TAG
 import app.learning.mediachunkupload.ui.custom.AutoFitTextureView
 import app.learning.mediachunkupload.ui.theme.MediaChunkUploadTheme
 import app.learning.mediachunkupload.util.FileUtils
@@ -507,7 +501,7 @@ class RecordingActivity : ComponentActivity(), TextureView.SurfaceTextureListene
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
         mediaRecorder.setOnInfoListener(this)
         mediaRecorder.setOnErrorListener(this)
-        mediaRecorder.setMaxFileSize((1024 * 1024 * Constants.VIDEO_SIZE_MAX_MB))
+        mediaRecorder.setMaxFileSize((1024 * 1024 * Constants.VIDEO_CHUNK_SIZE_MB))
 
         val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             display
